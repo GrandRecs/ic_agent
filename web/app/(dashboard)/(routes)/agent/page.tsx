@@ -40,6 +40,7 @@ const ConversationPage = () => {
                 cache: "no-cache",
                 headers: {
                     'Content-Type': 'application/json',
+                    'uid': 'uid',
                 }
             }).catch((err) => {
                 throw err;
@@ -49,9 +50,9 @@ const ConversationPage = () => {
                 if (data.chat_history && data.chat_history.length > 0){
                     data.chat_history.reverse().forEach((message: string[]) => {
                         const userMessage = { role: "user", content: message[0].replace("Human: ", "") };   
-                        setMessages((current) => [...current, userMessage]);
+                        setMessages((current: any) => [...current, userMessage]);
                         const botMessage = { role: "bot", content: message[1].replace("AI: ", "") };
-                        setMessages((current) => [...current, botMessage]);
+                        setMessages((current: any) => [...current, botMessage]);
                     });
                 }
             }
@@ -63,12 +64,13 @@ const ConversationPage = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             const userMessage = { role: "user", content: values.prompt };
-            setMessages((current) => [...current, userMessage]);
+            setMessages((current: any) => [...current, userMessage]);
             setBot({ role: "bot", content: '' })
             const response = await fetch('api/getRequestFromLLM', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'uid': 'uid',
                 },
                 body: JSON.stringify({ question: values.prompt })
             });
@@ -82,14 +84,14 @@ const ConversationPage = () => {
                     function processResult(result): any {
                         if (result.done) {
                             const botMessage = { role: "bot", content: botResult };
-                            setMessages((current) => [...current, botMessage]);
+                            setMessages((current: any) => [...current, botMessage]);
                             setBot({ role: "bot", content: '' });
                             setLoading(false);
                             return;
                         }
                         let token = decoder.decode(result.value);
                         // console.log(token, token === '\n', token === '\t')
-                        setBot(pre => ({ role: "bot", content: pre.content + token }))
+                        setBot((pre: { content: string; }) => ({ role: "bot", content: pre.content + token }))
                         botResult += token;
                         return reader.read().then(processResult);
                     });

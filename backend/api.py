@@ -36,7 +36,7 @@ user_data = {}
 
 @app.get('/getChatHistory')
 async def get_chat_history(request: Request):
-    uid = request.headers.get('utorid', None)
+    uid = request.headers.get('uid', None)
     if uid is None:
         return JSONResponse(status_code=400, content={"error": "User not found or UID not provided"})
     if uid not in user_data:
@@ -48,7 +48,7 @@ async def get_chat_history(request: Request):
 async def post_request_to_llm(request: Request):
     data = await request.body()
     data = json.loads(data.decode("utf-8"))
-    uid = request.headers.get('utorid', None)
+    uid = request.headers.get('uid', None)
     if uid is None:
         return JSONResponse(status_code=400, content={"error": "User not found or UID not provided"})
     if "question" in data:
@@ -69,7 +69,7 @@ async def post_request_to_llm(request: Request):
 
 @app.post('/getRequestFromLLM')
 async def get_request_from_llm(request: Request) -> StreamingResponse:
-    uid = request.headers.get('utorid', None)
+    uid = request.headers.get('uid', None)
     data = await request.body()
     data = json.loads(data.decode("utf-8"))
     if uid is None or "question" not in data:
