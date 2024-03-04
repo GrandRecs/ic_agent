@@ -1,4 +1,3 @@
-# ic_agent
 
 # LLM Assistant and Attack Platform
 
