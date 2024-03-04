@@ -1,0 +1,16 @@
+###### Requirements without Version Specifiers ######
+grpcio
+grpcio-tools
+torch
+transformers
+langchain
+langchain-community
+nltk
+bitsandbytes
+accelerate
+scipy
+InstructorEmbedding
+sentence_transformers
+
+###### Requirements with Version Specifiers ######
+# setuptools==65.6.3

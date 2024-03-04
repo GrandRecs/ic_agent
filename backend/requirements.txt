@@ -1,0 +1,26 @@
+###### Requirements with Version Specifiers ######
+langchain==0.0.353
+langchain-community==0.0.7
+langchain-core==0.1.4
+langchain-experimental==0.0.47
+langcodes==3.3.0
+langsmith==0.0.75
+llama-index==0.9.24
+fastapi==0.103.2
+typing-inspect==0.9.0
+typing_extensions==4.9.0
+pymilvus==2.3.4
+pymongo==4.6.1
+uvicorn==0.23.2
+
+###### Requirements without Version Specifiers ######
+numba
+numexpr
+numpy
+numpydo
+requests
+regex
+sse-starlette
+asyncio
+json
+grpcio
