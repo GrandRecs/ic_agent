@@ -13,6 +13,10 @@ We have 2 submitted papers about this matter and will be linking them here once 
 
 We've applied the concept of 'attack LLM' as a central theme, incorporating numerous sources on how to conduct such attacks into our Milvus vector database for effective RAG with the LLM. 
 
+
+<img width="619" alt="Screenshot 2024-03-04 at 12 13 25 PM" src="https://github.com/GrandRecs/ic_agent/assets/66585292/4cd7fcc0-5e80-4625-8fd1-8e84827e26b6">
+
+
 ## Implementation Details
 
 Our setup includes a Neural Chat 7b model and GPT-4.0, both integrated with and without our IC Framework, serving as the LLM assistant. For attack simulations, we employ the Zypher 7b model, inviting students to explore various attack methodologies. Authentication is managed via Shibboleth, provided by the University of Toronto.
