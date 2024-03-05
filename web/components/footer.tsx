@@ -13,7 +13,7 @@ export default function Footer() {
                     </a>
                     <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
                         <li>
-                            <a href="/about" className="hover:underline me-4 md:me-6">About</a>
+                            <a href="https://github.com/GrandRecs/ic_agent/blob/main/README.md" className="hover:underline me-4 md:me-6">About</a>
                         </li>
                         <li>
                             <a href="https://github.com/GrandRecs/ic_agent?tab=GPL-3.0-1-ov-file" className="hover:underline me-4 md:me-6">Licensing</a>
