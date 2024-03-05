@@ -16,7 +16,7 @@ export default function Footer() {
                             <a href="https://github.com/GrandRecs/ic_agent/blob/main/README.md" className="hover:underline me-4 md:me-6">About</a>
                         </li>
                         <li>
-                            <a href="https://github.com/GrandRecs/ic_agent?tab=GPL-3.0-1-ov-file" className="hover:underline me-4 md:me-6">Licensing</a>
+                            <a href="https://github.com/GrandRecs/ic_agent/blob/main/LICENSE" className="hover:underline me-4 md:me-6">Licensing</a>
                         </li>
                         <li>
                             <a href="https://github.com/GrandRecs/ic_agent" className="hover:underline">Github</a>
