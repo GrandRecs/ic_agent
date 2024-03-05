@@ -31,6 +31,12 @@ To use our platform, ensure your system meets the following specifications:
 - nvidia-docker2
 - A compatible GPU, VRAM>=8GB
 
+## How to use
+
+```
+docker compose up -d
+```
+
 ## Conclusion
 
 Our platform demonstrates the practical application of hosting an LLM for educational purposes, allowing educators and students to interact with advanced AI models. The integration of RAG aims to refine the LLM's responses, reducing misinformation and enhancing the educational value.
