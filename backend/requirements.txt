@@ -2,7 +2,7 @@
 langchain==0.1.11
 langchain-community==0.0.7
 langchain-core==0.1.4
-langchain-experimental==0.0.47
+langchain-experimental==0.0.52
 langcodes==3.3.0
 langsmith==0.0.75
 llama-index==0.9.24
