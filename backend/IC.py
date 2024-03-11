@@ -14,14 +14,6 @@ from rpcllm import Prompt_compressor, Embedding, LLM
 
 warnings.filterwarnings('ignore')
 
-def log(memory="", questions=[], answers=[], errors=[], time=""):
-    report = {}
-    if len(errors) > 0:
-        report = {"type": "error", "memory": memory, "errors": errors}
-    elif len(questions) > 0:
-        report = {"type": "generated", "questions": questions, "time": time}
-    requests.post("https://ntfy.sh/llm", data=str(report).encode(encoding='utf-8'))
-
 class retrieval_service():
 
     MILVUS_URL=None
@@ -155,7 +147,6 @@ class retrieval_service():
                 questions = question_generator({"summary": DC})
                 questions = questions['questions'].strip()
                 if(questions.strip() == "I don't know"):
-                    log(memory=DC, errors=questions)
                     restart = False
                     return
                 if questions.startswith("[") and questions.endswith("]"):
@@ -165,7 +156,6 @@ class retrieval_service():
             except Exception as e:
                 restart = True
                 print("IC retrying......")
-                log(memory=DC, errors=questions)
                 print(questions)
         #2
         SUMMARY_TEMPLATE = """
@@ -203,12 +193,10 @@ class retrieval_service():
             self.DB_MAP[to_db]['doc_adder']([Document(text=summary['summary'], metadata={})])
             summaries.append(summary)
         toc = time.perf_counter()
-        log(questions=questions, answers=summaries, time=toc - tic)
         return {"question": questions, "summary": summaries}
 
 
-    def IC(self, memory):
-        chat_history = memory.moving_summary_buffer
+    def IC(self, chat_history):
         for i in range(len(self.DBS), 1, -1):
             self.IC_createor(self.DBS[i-1]['name'], self.DBS[i-2]['name'], chat_history)
 
