@@ -21,7 +21,6 @@ from langchain.chains import LLMChain
 from langchain.memory.utils import get_prompt_input_key
 from langchain.memory.chat_memory import BaseChatMemory
 from langchain.callbacks.base import AsyncCallbackHandler
-from langchain_experimental.data_anonymizer import PresidioAnonymizer
 
 
 
@@ -213,19 +212,16 @@ class ICSummaryMemory(BaseChatMemory, SummarizerMixin):
         return ""
                     
     def write(self, content):
-        anonymizer = PresidioAnonymizer()
-
-        anonymized_content = anonymizer.anonymize(content)
 
         self.add_connect()
         if self.db.find_one({'role': 'conversation', 'uid': self.uid}):
             self.db.update_one(
                 {'role': 'conversation', 'uid': self.uid}, 
-                {'$push': {'history': {'$each': [anonymized_content], '$position': 0}}, "$set": {"time": time.time()}}
+                {'$push': {'history': {'$each': [content], '$position': 0}}, "$set": {"time": time.time()}}
             )
         else:
             self.db.insert_one(
-                {'role': 'conversation', 'uid': self.uid, 'history': [anonymized_content], "time": time.time()}
+                {'role': 'conversation', 'uid': self.uid, 'history': [content], "time": time.time()}
             )
     @property
     def buffer(self) -> List[BaseMessage]:
