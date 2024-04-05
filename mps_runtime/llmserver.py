@@ -1,4 +1,4 @@
-import os, grpc, time, ast, torch, warnings, argparse
+import os, grpc, time, ast, torch, warnings
 
 from threading import Thread
 from concurrent import futures
@@ -6,10 +6,11 @@ from concurrent import futures
 from agent_pb2 import TextResponse, FloatListList, FloatList, Result
 from agent_pb2_grpc import llmServicer, add_llmServicer_to_server, embedingServicer, add_embedingServicer_to_server, compressed_promptServicer, add_compressed_promptServicer_to_server
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, TextStreamer, AutoConfig, TextIteratorStreamer
+from ctransformers import AutoModelForCausalLM
+from transformers import AutoTokenizer, pipeline, AutoConfig, TextIteratorStreamer
 
-from langchain.embeddings import HuggingFaceInstructEmbeddings
-from langchain.llms import HuggingFacePipeline
+from langchain_community.embeddings import HuggingFaceInstructEmbeddings
+from langchain_community.llms import HuggingFacePipeline
 from prompt_compressor import PromptCompressor
 
 warnings.filterwarnings('ignore')
@@ -18,21 +19,14 @@ port = 50051
 
 print("Loading language model")
     
-config = AutoConfig.from_pretrained("./models/neural-chat-7b-v3-1")
-tokenizer = AutoTokenizer.from_pretrained("./models/neural-chat-7b-v3-1")
-model = AutoModelForCausalLM.from_pretrained(
-    "./models/neural-chat-7b-v3-1",
-    load_in_4bit=True, 
-    bnb_4bit_use_double_quant=True, 
-    bnb_4bit_quant_type="nf4", 
-    bnb_4bit_compute_dtype=torch.float16, 
-    attn_implementation="flash_attention_2",
-)
+config = AutoConfig.from_pretrained("./models/neural-chat-7b-v3-3")
+model = AutoModelForCausalLM.from_pretrained("./gguf/neural-chat-7B-v3-3-GGUF/neural-chat-7b-v3-3.Q4_K_M.gguf", hf=True, gpu_layers=1)
+tokenizer = AutoTokenizer.from_pretrained("./models/neural-chat-7b-v3-3")
 llm_lingua = PromptCompressor(model, tokenizer, config)
 
 print("Loading embeding model")
 
-embedding = HuggingFaceInstructEmbeddings(model_name="./models/bge-base-en-v1.5", model_kwargs={"device": "cuda"})
+embedding = HuggingFaceInstructEmbeddings(model_name="./models/bge-base-en-v1.5", model_kwargs={"device": "mps"})
 
 session = {}
 
@@ -41,7 +35,7 @@ class llmServicer(llmServicer):
     pipeline_kwargs = None
     
     def stream(self, request, context):
-        torch.cuda.empty_cache()
+        torch.mps.empty_cache()
         if request.id is None or request.id == "":
             return
         try:
@@ -54,10 +48,10 @@ class llmServicer(llmServicer):
     #             print(token, end="", flush=True)
                 yield TextResponse(result=token)
             thread.join()
-            torch.cuda.empty_cache()
+            torch.mps.empty_cache()
         except:
             for i in range(10):
-                torch.cuda.empty_cache()
+                torch.mps.empty_cache()
         
     def create(self, uid):
         if uid not in session:
@@ -65,12 +59,12 @@ class llmServicer(llmServicer):
 #         if 'pipe' not in session[uid] or 'llm' not in session[uid] or 'streamer' not in session[uid]:
         session[uid]['streamer'] = TextIteratorStreamer(tokenizer, Timeout=0.1, skip_prompt=True, skip_special_tokens=True)
         session[uid]['pipe'] = pipeline(
-            "text-generation", 
-            device_map='cuda', 
-            model=model, 
-            tokenizer=tokenizer,
+            "text-generation",
+            model=model,
+            tokenizer= tokenizer,
             streamer=session[uid]['streamer'],
-            max_new_tokens = 2048, 
+            device_map="mps",
+            max_new_tokens = 2048,
             pad_token_id=tokenizer.eos_token_id,
             batch_size=8,
         )
@@ -93,7 +87,7 @@ class embedingServicer(embedingServicer):
 
 class compressed_promptServicer(compressed_promptServicer):
     def compress(self, request, context):
-        torch.cuda.empty_cache()
+        torch.mps.empty_cache()
         files = request.docs
         instruction = request.instruction
         question = request.question
@@ -111,11 +105,11 @@ class compressed_promptServicer(compressed_promptServicer):
                 dynamic_context_compression_ratio=0.4,
                 reorder_context="sort"
             )
-            torch.cuda.empty_cache()
+            torch.mps.empty_cache()
             return Result(docs=result['compressed_prompt'], origin_tokens=result['origin_tokens'], compressed_tokens=result['compressed_tokens'], ratio=result['ratio'])
         except:
             for i in range(10):
-                torch.cuda.empty_cache()
+                torch.mps.empty_cache()
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

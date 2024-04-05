@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+service llm {
+    rpc stream (TextRequest) returns (stream TextResponse);
+}
+
+message TextRequest {
+    string prompt = 1;
+    string model_kwargs = 2;
+    string pipeline_kwargs = 3;
+    string id = 4;
+}
+
+message TextResponse {
+    string result = 1;
+}
+
+service embeding {
+    rpc embed_documents (Docs) returns (FloatListList);
+    rpc embed_query (Query) returns (FloatList);
+}
+
+message FloatListList {
+  repeated FloatList docs = 1;
+}
+
+message FloatList {
+  repeated float query = 1;
+}
+
+message Query {
+    string text = 1;
+    string query_inst = 2;
+}
+
+message Docs {
+    repeated string docs = 1;
+    string embed_inst = 2;
+}
+
+service compressed_prompt {
+    rpc compress (Compress) returns (Result);
+}
+
+message Result {
+    string docs = 1;
+    int32 origin_tokens = 2;
+    int32 compressed_tokens = 3;
+    string ratio = 4;
+}
+
+message Compress {
+    repeated string docs = 1;
+    string instruction = 2;
+    string question = 3;
+}

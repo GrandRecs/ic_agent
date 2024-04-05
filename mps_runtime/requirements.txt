@@ -1,0 +1,10 @@
+###### Requirements without Version Specifiers ######
+grpcio==1.58.0
+torch==2.2.2
+ctransformers==0.2.27
+transformers==4.39.3
+langchain==0.1.14
+langchain-community==0.0.31
+InstructorEmbedding==1.0.1
+sentence-transformers==2.2.2
+protobuf
