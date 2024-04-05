@@ -226,7 +226,7 @@ class retrieval_service():
         self.llm = LLM(host=self.GPU_RUNTIME, uid="IC", stream_out=False)
         self.pc = Prompt_compressor(host=self.GPU_RUNTIME)
         for db in self.DBS:
-            db['db'] = MilvusVectorStore(dim=768, MILVUS_URL=self.MILVUS_URL, collection_name=db['name'])
+            db['db'] = MilvusVectorStore(dim=768, uri="http://{}".format(self.MILVUS_URL), collection_name=db['name'])
             db['index'] = self.create_index(self.llm, self.embedding, db['parser'], db['db'])  
             db['doc_adder'] = lambda docs, current_db=db: self.create_insert(current_db['name'], self.llm, self.embedding, current_db['parser'], current_db['db'], docs)
             db['retriever'] = lambda k, query, current_db=db: self.create_retriever(current_db['name'], current_db['index'], k, query)
