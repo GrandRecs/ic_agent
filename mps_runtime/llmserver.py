@@ -108,6 +108,7 @@ class compressed_promptServicer(compressed_promptServicer):
             torch.mps.empty_cache()
             return Result(docs=result['compressed_prompt'], origin_tokens=result['origin_tokens'], compressed_tokens=result['compressed_tokens'], ratio=result['ratio'])
         except:
+            return Result(docs=" ".join(files), origin_tokens=0, compressed_tokens=0, ratio=0)
             for i in range(10):
                 torch.mps.empty_cache()
 
