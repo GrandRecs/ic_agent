@@ -17,6 +17,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - milvus
 
   minio:
     container_name: milvus-minio
@@ -35,6 +37,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - milvus
 
   standalone:
     container_name: milvus-standalone
@@ -59,6 +63,8 @@ services:
     depends_on:
       - "etcd"
       - "minio"
+    networks:
+      - milvus
 
   mongodb:
     container_name: mongodb
@@ -68,25 +74,8 @@ services:
     ports:
       - "27017:27017"
     restart: always
-
-  backend:
-    container_name: backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - 65500:65500
-    environment:
-      - MONGO_URI=mongodb:27017
-      - LLM_URI=llm:50051
-      - MILVUS_URI=standalone:19530
-    depends_on:
-      - "standalone"
-      - "mongodb"
-    restart: always
     networks:
-      milvus:
-        ipv4_address: 172.25.0.2
+      - milvus
 
   frontend:
     container_name: frontend
@@ -95,12 +84,29 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
-    depends_on:
-      - "backend"
+    # depends_on:
+    #   - "backend"
     restart: always
     networks:
-      milvus:
-        ipv4_address: 172.25.0.3
+      - milvus
+
+  # backend:
+  #   container_name: backend
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 65500:65500
+  #   environment:
+  #     - MONGO_URI=mongodb:27017
+  #     - LLM_URI=host.docker.internal:50051
+  #     - MILVUS_URI=standalone:19530
+  #   depends_on:
+  #     - "standalone"
+  #     - "mongodb"
+  #   restart: always
+  #   networks:
+  #     - milvus
 
   nginx:
     image: nginx
@@ -110,10 +116,12 @@ services:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - "frontend"
-      - "backend"
+    networks:
+      - milvus
 
 networks:
   milvus:
+    driver: bridge
     ipam:
       config:
         - subnet: 172.25.0.0/16

@@ -44,26 +44,40 @@ cp docker-compose-nvidia.yml docker-compose.yml
 docker compose up -d
 ```
 
-### For MACOS
+### For MACOS (BETA)
 ```
 cd models && mkdir gguf
 ```
 download additional gguf model from huggingface and place them into gguf models/gguf folder
 
-start the llm server
-```
-cd mps_runtime
-pip3 uninstall ctransformers --yes
-CT_METAL=1 pip3 install ctransformers --no-binary ctransformers
-pip3 install -r requirements.txt
-python3 llmserver.py
-```
 start the program
 ```
 cd ..
 cp docker-compose-mps.yml docker-compose.yml
 docker compose up -d
 ```
+
+start the llm server(recommend using a conda virtual environment)
+```
+cd mps_runtime
+conda create -n llm python=3.10
+conda activate llm
+pip3 uninstall ctransformers --yes
+CT_METAL=1 pip3 install ctransformers --no-binary ctransformers
+pip3 install -r requirements.txt
+screen python3 llmserver.py # you may wish to use screen to run the server in the background
+```
+
+start the backend server(recommend using a conda virtual environment) 
+```
+cd backend
+conda create -n backend python=3.10
+conda activate backend
+pip3 install -r requirements.txt
+screen python3 api.py # you may wish to use screen to run the server in the background
+```
+
+visit localhost:8080 to access the service
 
 ## Conclusion
 

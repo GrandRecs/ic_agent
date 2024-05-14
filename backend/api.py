@@ -34,7 +34,7 @@ app.add_middleware(
 
 user_data = {}
 
-@app.get('/getChatHistory')
+@app.get('/api/getChatHistory')
 async def get_chat_history(request: Request):
     uid = request.headers.get('uid', None)
     if uid is None:
@@ -44,7 +44,7 @@ async def get_chat_history(request: Request):
     chat_history = user_data[uid].full.get_history()['full_history']
     return JSONResponse(status_code=200, content={"chat_history": chat_history})
 
-@app.post('/postRequestToLLM')
+@app.post('/api/postRequestToLLM')
 async def post_request_to_llm(request: Request):
     data = await request.body()
     data = json.loads(data.decode("utf-8"))
@@ -67,7 +67,7 @@ async def post_request_to_llm(request: Request):
     else:
         return JSONResponse(status_code=400, content={"error": "parameter 'question' are required"})
 
-@app.post('/getRequestFromLLM')
+@app.post('/api/getRequestFromLLM')
 async def get_request_from_llm(request: Request) -> StreamingResponse:
     uid = request.headers.get('uid', None)
     data = await request.body()

@@ -18,6 +18,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - milvus
 
   minio:
     container_name: milvus-minio
@@ -37,6 +39,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - milvus
 
   standalone:
     container_name: milvus-standalone
@@ -68,6 +72,8 @@ services:
             - driver: nvidia
               capabilities: ["gpu"]
               device_ids: ["0"]
+    networks:
+      - milvus
   
   mongodb:
     container_name: mongodb
@@ -77,6 +83,8 @@ services:
     ports:
       - "27017:27017"
     restart: always
+    networks:
+      - milvus
 
   llm:
     container_name: llm
@@ -95,6 +103,8 @@ services:
               capabilities: ["gpu"]
               device_ids: ["0"]
     restart: always
+    networks:
+      - milvus
     
   backend:
     container_name: backend
@@ -112,6 +122,8 @@ services:
       - "standalone"
       - "mongodb"
     restart: always
+    networks:
+      - milvus
 
   frontend:
     container_name: frontend
@@ -123,18 +135,23 @@ services:
     depends_on:
       - "backend"
     restart: always
+    networks:
+      - milvus
 
   nginx:
     image: nginx
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - frontend
-      - backend
-
+    networks:
+      - milvus
 
 networks:
-  default:
-    name: milvus
+  milvus:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
