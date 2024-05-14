@@ -10,9 +10,9 @@ from IC import retrieval_service
 from rpcllm import ICSummaryMemory, LLM
 from student import student_service
 
-MONGODB_URL = os.environ['MONGO_URI']
-GPU_RUNTIME = os.environ['LLM_URI']
-MILVUS_URL = os.environ['MILVUS_URI']
+MONGODB_URL = os.environ.get('MONGO_URI') or "localhost:27017"
+GPU_RUNTIME = os.environ.get('LLM_URI') or "localhost:50051"
+MILVUS_URL = os.environ.get('MILVUS_URI') or "localhost:19530"
 
 retrieval = retrieval_service(
     MILVUS_URL=MILVUS_URL,

@@ -34,6 +34,34 @@ To use our platform, ensure your system meets the following specifications:
 ## How to use
 
 ```
+mkdir models && cd models
+```
+download the llm and embeding model from huggingface and place them into gguf models folder
+
+### For windows and ubuntu
+```
+cp docker-compose-nvidia.yml docker-compose.yml
+docker compose up -d
+```
+
+### For MACOS
+```
+cd models && mkdir gguf
+```
+download additional gguf model from huggingface and place them into gguf models/gguf folder
+
+start the llm server
+```
+cd mps_runtime
+pip3 uninstall ctransformers --yes
+CT_METAL=1 pip3 install ctransformers --no-binary ctransformers
+pip3 install -r requirements.txt
+python3 llmserver.py
+```
+start the program
+```
+cd ..
+cp docker-compose-mps.yml docker-compose.yml
 docker compose up -d
 ```
 

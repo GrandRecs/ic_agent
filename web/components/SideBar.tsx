@@ -8,7 +8,7 @@ import React from "react";
 
 const routes = [
     {
-        label: "Hack the LLM Assistant Bot",
+        label: "LLM Assistant",
         icon: BrainCircuit,
         href: "/agent",
         color: "text-violet-500",

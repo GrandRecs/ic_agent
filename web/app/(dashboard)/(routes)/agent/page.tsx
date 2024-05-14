@@ -110,7 +110,7 @@ const ConversationPage = () => {
     return (
         <div>
             <Heading
-                title="Hack the LLM Assistant"
+                title="LLM Assistant"
                 description="Secure, Helpful, and Responsive Conversation"
                 icon={MessageSquare}
                 iconColor="text-violet-500"

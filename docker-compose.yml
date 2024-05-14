@@ -12,7 +12,6 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
-    restart: always
     healthcheck:
       test: ["CMD", "etcdctl", "endpoint", "health"]
       interval: 30s
@@ -31,7 +30,6 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
     command: minio server /minio_data --console-address ":9001"
-    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -40,13 +38,13 @@ services:
 
   standalone:
     container_name: milvus-standalone
-    image: milvusdb/milvus:2.3-latest-gpu
+    image: milvusdb/milvus:2.3-latest
     command: ["milvus", "run", "standalone"]
-    restart: always
+    security_opt:
+    - seccomp:unconfined
     environment:
       ETCD_ENDPOINTS: etcd:2379
       MINIO_ADDRESS: minio:9000
-      KNOWHERE_GPU_MEM_POOL_SIZE: 4096:24576
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
     healthcheck:
@@ -61,14 +59,7 @@ services:
     depends_on:
       - "etcd"
       - "minio"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: ["gpu"]
-              device_ids: ["0"]
-  
+
   mongodb:
     container_name: mongodb
     image: mongodb/mongodb-community-server:latest
@@ -78,24 +69,6 @@ services:
       - "27017:27017"
     restart: always
 
-  llm:
-    container_name: llm
-    build:
-      context: ./docker_runtime
-      dockerfile: Dockerfile
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/llm:/usr/src/llm/models
-    ports:
-      - 50051:50051
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: ["gpu"]
-              device_ids: ["0"]
-    restart: always
-    
   backend:
     container_name: backend
     build:
@@ -108,33 +81,39 @@ services:
       - LLM_URI=llm:50051
       - MILVUS_URI=standalone:19530
     depends_on:
-      - "llm"
       - "standalone"
       - "mongodb"
     restart: always
+    networks:
+      milvus:
+        ipv4_address: 172.25.0.2
 
   frontend:
     container_name: frontend
     build:
-      context: ./frontend
+      context: ./web
       dockerfile: Dockerfile
     ports:
       - 3000:3000
     depends_on:
       - "backend"
     restart: always
+    networks:
+      milvus:
+        ipv4_address: 172.25.0.3
 
   nginx:
     image: nginx
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - frontend
-      - backend
-
+      - "frontend"
+      - "backend"
 
 networks:
-  default:
-    name: milvus
+  milvus:
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16

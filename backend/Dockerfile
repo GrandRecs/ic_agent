@@ -1,9 +1,9 @@
-FROM ubuntu:latest
+FROM python:3.10
 
 WORKDIR /usr/src/backend
 COPY . .
 
-RUN apt update -y && apt install --upgrade python3 python3-pip -y && python3 -m pip install pip && pip install -r requirements.txt --upgrade
+RUN python3 -m pip install pip && pip install -r requirements.txt
 
 EXPOSE 65500
 CMD python3 api.py

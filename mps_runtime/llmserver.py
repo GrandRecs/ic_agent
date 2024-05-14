@@ -1,4 +1,4 @@
-import os, grpc, time, ast, torch, warnings
+import os, grpc, time, ast, torch, warnings, argparse, sys
 
 from threading import Thread
 from concurrent import futures
@@ -15,18 +15,38 @@ from prompt_compressor import PromptCompressor
 
 warnings.filterwarnings('ignore')
 
+parser = argparse.ArgumentParser(
+    description="start llm server"
+)
+parser.add_argument("--model", required=False, type=str)
+parser.add_argument("--embedding", required=False, type=str)
+args = parser.parse_args()
+
+model_name = args.model or "neural-chat-7b-v3-3"
+embedding_name = args.embedding or "bge-base-en-v1.5"
+
+if not os.path.exists("../models/" + model_name):
+    print(model_name + " does not exist in the ../models/")
+    sys.exit(1)
+if not os.path.exists("../models/gguf/" + model_name + ".gguf"):
+    print(model_name + " does not exist in the " + "../models/gguf/" + model_name + ".gguf")
+    sys.exit(1)
+if not os.path.exists("../models/" + embedding_name):
+    print(embedding_name + " does not exist in the ../models/")
+    sys.exit(1)
+
 port = 50051
 
 print("Loading language model")
     
-config = AutoConfig.from_pretrained("./models/neural-chat-7b-v3-3")
-model = AutoModelForCausalLM.from_pretrained("./gguf/neural-chat-7B-v3-3-GGUF/neural-chat-7b-v3-3.Q4_K_M.gguf", hf=True, gpu_layers=1)
-tokenizer = AutoTokenizer.from_pretrained("./models/neural-chat-7b-v3-3")
+config = AutoConfig.from_pretrained("../models/" + model_name)
+model = AutoModelForCausalLM.from_pretrained("../models/gguf/" + model_name + ".gguf", hf=True, gpu_layers=1)
+tokenizer = AutoTokenizer.from_pretrained("../models/" + model_name)
 llm_lingua = PromptCompressor(model, tokenizer, config)
 
 print("Loading embeding model")
 
-embedding = HuggingFaceInstructEmbeddings(model_name="./models/bge-base-en-v1.5", model_kwargs={"device": "mps"})
+embedding = HuggingFaceInstructEmbeddings(model_name="../models/" + embedding_name, model_kwargs={"device": "mps"})
 
 session = {}
 

@@ -1,4 +1,4 @@
-import os, grpc, time, ast, torch, warnings, argparse
+import os, grpc, time, ast, torch, warnings, argparse, sys
 
 from threading import Thread
 from concurrent import futures
@@ -14,14 +14,31 @@ from prompt_compressor import PromptCompressor
 
 warnings.filterwarnings('ignore')
 
+parser = argparse.ArgumentParser(
+    description="start llm server"
+)
+parser.add_argument("--model", required=False, type=str)
+parser.add_argument("--embedding", required=False, type=str)
+args = parser.parse_args()
+
+model_name = args.model or "neural-chat-7b-v3-3"
+embedding_name = args.embedding or "bge-base-en-v1.5"
+
+if not os.path.exists("../models/" + model_name):
+    print(model_name + " does not exist in the ./models/")
+    sys.exit(1)
+if not os.path.exists("../models/" + embedding_name):
+    print(embedding_name + " does not exist in the ./models/")
+    sys.exit(1)
+
 port = 50051
 
 print("Loading language model")
     
-config = AutoConfig.from_pretrained("./models/neural-chat-7b-v3-1")
-tokenizer = AutoTokenizer.from_pretrained("./models/neural-chat-7b-v3-1")
+config = AutoConfig.from_pretrained("./models/" + model_name)
+tokenizer = AutoTokenizer.from_pretrained("./models/" + model_name)
 model = AutoModelForCausalLM.from_pretrained(
-    "./models/neural-chat-7b-v3-1",
+    "./models/" + model_name,
     load_in_4bit=True, 
     bnb_4bit_use_double_quant=True, 
     bnb_4bit_quant_type="nf4", 
@@ -32,7 +49,7 @@ llm_lingua = PromptCompressor(model, tokenizer, config)
 
 print("Loading embeding model")
 
-embedding = HuggingFaceInstructEmbeddings(model_name="./models/bge-base-en-v1.5", model_kwargs={"device": "cuda"})
+embedding = HuggingFaceInstructEmbeddings(model_name="./models/" + embedding_name, model_kwargs={"device": "cuda"})
 
 session = {}
 
