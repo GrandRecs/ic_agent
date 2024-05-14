@@ -79,9 +79,7 @@ services:
 
   frontend:
     container_name: frontend
-    build:
-      context: ./web
-      dockerfile: Dockerfile
+    image: zezhuyu/ic_agent_frontend:latest
     ports:
       - 3000:3000
     # depends_on:
@@ -92,9 +90,7 @@ services:
 
   # backend:
   #   container_name: backend
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
+  #   image: zezhuyu/ic_agent_backend:latest
   #   ports:
   #     - 65500:65500
   #   environment:
