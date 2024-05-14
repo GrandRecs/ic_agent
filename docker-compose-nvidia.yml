@@ -92,7 +92,7 @@ services:
       context: ./docker_runtime
       dockerfile: Dockerfile
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/models:/usr/src/llm/models
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/models:/usr/src/models
     ports:
       - 50051:50051
     deploy:
