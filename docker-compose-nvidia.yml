@@ -88,9 +88,7 @@ services:
 
   llm:
     container_name: llm
-    build:
-      context: ./docker_runtime
-      dockerfile: Dockerfile
+    image: zezhuyu/llm:latest
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/models:/usr/src/models
     ports:
