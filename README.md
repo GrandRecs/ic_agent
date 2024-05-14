@@ -36,7 +36,7 @@ To use our platform, ensure your system meets the following specifications:
 ```
 mkdir models && cd models
 ```
-download the llm and embeding model from huggingface and place them into gguf models folder
+download the llm and embeding model from huggingface and place them into models folder
 
 ### For windows and ubuntu
 ```
