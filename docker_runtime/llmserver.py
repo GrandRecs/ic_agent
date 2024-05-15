@@ -28,10 +28,10 @@ port = 50051
 
 print("Loading language model")
     
-config = AutoConfig.from_pretrained("./models/" + model_name)
-tokenizer = AutoTokenizer.from_pretrained("./models/" + model_name)
+config = AutoConfig.from_pretrained("../models/" + model_name)
+tokenizer = AutoTokenizer.from_pretrained("../models/" + model_name)
 model = AutoModelForCausalLM.from_pretrained(
-    "./models/" + model_name,
+    "../models/" + model_name,
     load_in_4bit=True, 
     bnb_4bit_use_double_quant=True, 
     bnb_4bit_quant_type="nf4", 
