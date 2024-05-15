@@ -35,7 +35,12 @@ To use our platform, ensure your system meets the following specifications:
 ## How to use
 
 ```
-mkdir models && cd models
+git clone https://github.com/GrandRecs/ic_agent.git
+mkdir models
+cd models
+git lfs install
+git clone https://huggingface.co/Intel/neural-chat-7b-v3-3
+git clone https://huggingface.co/BAAI/bge-base-en-v1.5
 ```
 download the llm and embeding model from huggingface and place them into models folder,
 additionally you may need to set proper permissions for volumes/mongodb to allow mongondb to write to the folder
@@ -49,7 +54,9 @@ docker compose up -d
 
 ### For MACOS (BETA)
 ```
-cd models && mkdir gguf
+cd models && mkdir gguf && cd gguf
+wget https://huggingface.co/TheBloke/neural-chat-7B-v3-3-GGUF/resolve/main/neural-chat-7b-v3-3.Q4_K_M.gguf
+mv neural-chat-7b-v3-3.Q4_K_M.gguf neural-chat-7b-v3-3.gguf
 ```
 download additional gguf model from huggingface and place them into gguf models/gguf folder
 
