@@ -232,4 +232,3 @@ class retrieval_service():
             db['doc_adder'] = lambda docs, current_db=db: self.create_insert(current_db['name'], self.llm, self.embedding, current_db['parser'], current_db['db'], docs)
             db['retriever'] = lambda k, query, current_db=db: self.create_retriever(current_db['name'], current_db['index'], k, query)
 
-

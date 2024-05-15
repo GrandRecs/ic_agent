@@ -30,13 +30,16 @@ To use our platform, ensure your system meets the following specifications:
 - CUDA > 12.1
 - nvidia-docker2
 - A compatible GPU, VRAM>=8GB
+- GIT LFS
 
 ## How to use
 
 ```
 mkdir models && cd models
 ```
-download the llm and embeding model from huggingface and place them into models folder
+download the llm and embeding model from huggingface and place them into models folder,
+additionally you may need to set proper permissions for volumes/mongodb to allow mongondb to write to the folder
+
 
 ### For windows and ubuntu
 ```
@@ -50,13 +53,6 @@ cd models && mkdir gguf
 ```
 download additional gguf model from huggingface and place them into gguf models/gguf folder
 
-start the program
-```
-cd ..
-cp docker-compose-mps.yml docker-compose.yml
-docker compose up -d
-```
-
 start the llm server(recommend using a conda virtual environment)
 ```
 cd mps_runtime
@@ -68,13 +64,10 @@ pip3 install -r requirements.txt
 screen python3 llmserver.py # you may wish to use screen to run the server in the background
 ```
 
-start the backend server(recommend using a conda virtual environment) 
+start the program
 ```
-cd backend
-conda create -n backend python=3.10
-conda activate backend
-pip3 install -r requirements.txt
-screen python3 api.py # you may wish to use screen to run the server in the background
+cp docker-compose-mps.yml docker-compose.yml
+docker compose up -d
 ```
 
 visit localhost:8080 to access the service

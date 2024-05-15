@@ -27,9 +27,9 @@ services:
     environment:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
-    ports:
-      - "9001:9001"
-      - "9000:9000"
+    # ports:
+    #   - "9001:9001"
+    #   - "9000:9000"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
     command: minio server /minio_data --console-address ":9001"
@@ -59,9 +59,9 @@ services:
       start_period: 90s
       timeout: 20s
       retries: 3
-    ports:
-      - "19530:19530"
-      - "9091:9091"
+    # ports:
+    #   - "19530:19530"
+    #   - "9091:9091"
     depends_on:
       - "etcd"
       - "minio"
@@ -77,11 +77,11 @@ services:
   
   mongodb:
     container_name: mongodb
-    image: mongodb/mongodb-community-server:latest
+    image: mongodb/mongodb-community-server:7.0.4-ubuntu2204
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mongodb:/data/db
-    ports:
-      - "27017:27017"
+    # ports:
+    #   - "27017:27017"
     restart: always
     networks:
       - milvus
@@ -89,6 +89,9 @@ services:
   llm:
     container_name: llm
     image: zezhuyu/llm:latest
+    # build:
+    #   context: ./docker_runtime
+    #   dockerfile: Dockerfile
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/models:/usr/src/models
     ports:
@@ -107,30 +110,38 @@ services:
   backend:
     container_name: backend
     image: zezhuyu/ic_agent_backend:latest
-    ports:
-      - 65500:65500
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    # ports:
+    #   - "65500:65500"
     environment:
-      - MONGO_URI=mongodb:27017
-      - LLM_URI=llm:50051
-      - MILVUS_URI=standalone:19530
+      MONGO_URI: mongodb:27017
+      LLM_URI: llm:50051
+      MILVUS_URI: http://standalone:19530
     depends_on:
       - "llm"
       - "standalone"
       - "mongodb"
     restart: always
     networks:
-      - milvus
+      milvus:
+        ipv4_address: 172.25.0.100
 
   frontend:
     container_name: frontend
     image: zezhuyu/ic_agent_frontend:latest
-    ports:
-      - 3000:3000
+    # build:
+    #   context: ./web
+    #   dockerfile: Dockerfile
+    # ports:
+    #   - "3000:3000"
     depends_on:
       - "backend"
     restart: always
     networks:
-      - milvus
+      milvus:
+        ipv4_address: 172.25.0.101
 
   nginx:
     image: nginx
@@ -139,7 +150,7 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - frontend
+      - "frontend"
     networks:
       - milvus
 
