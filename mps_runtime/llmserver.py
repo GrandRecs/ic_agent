@@ -15,15 +15,9 @@ from prompt_compressor import PromptCompressor
 
 warnings.filterwarnings('ignore')
 
-parser = argparse.ArgumentParser(
-    description="start llm server"
-)
-parser.add_argument("--model", required=False, type=str)
-parser.add_argument("--embedding", required=False, type=str)
-args = parser.parse_args()
 
-model_name = args.model or "neural-chat-7b-v3-3"
-embedding_name = args.embedding or "bge-base-en-v1.5"
+model_name = os.environ.get('MODEL') or "neural-chat-7b-v3-3"
+embedding_name = os.environ.get('EMBEDING') or "bge-base-en-v1.5"
 
 if not os.path.exists("../models/" + model_name):
     print(model_name + " does not exist in the ../models/")
