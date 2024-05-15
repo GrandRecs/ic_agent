@@ -42,7 +42,7 @@ llm_lingua = PromptCompressor(model, tokenizer, config)
 
 print("Loading embeding model")
 
-embedding = HuggingFaceInstructEmbeddings(model_name="./models/" + embedding_name, model_kwargs={"device": "cuda"})
+embedding = HuggingFaceInstructEmbeddings(model_name="../models/" + embedding_name, model_kwargs={"device": "cuda"})
 
 session = {}
 
