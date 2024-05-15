@@ -27,10 +27,14 @@ To use our platform, ensure your system meets the following specifications:
 
 - Python >= 3.10
 - Node.js == v20.11.1
+- GIT LFS
+For Windows and Linux
 - CUDA > 12.1
 - nvidia-docker2
 - A compatible GPU, VRAM>=8GB
-- GIT LFS
+For MacOS
+- M-series Apple silicon, RAM>=16GB
+
 
 ## How to use
 
