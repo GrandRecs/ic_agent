@@ -25,14 +25,13 @@ Our setup includes a Neural Chat 7b model and GPT-4.0, both integrated with and 
 
 To use our platform, ensure your system meets the following specifications:
 
-- Python >= 3.10
-- Node.js == v20.11.1
 - GIT LFS
 #### For Windows and Linux
 - CUDA > 12.1
 - nvidia-docker2
 - A compatible GPU, VRAM>=8GB
 #### For MacOS
+- Python >= 3.10
 - M-series Apple silicon, RAM>=16GB
 
 
