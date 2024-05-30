@@ -3,7 +3,7 @@ import os, grpc, time, ast, torch, warnings, sys
 from threading import Thread
 from concurrent import futures
 
-from agent_pb2 import TextResponse, FloatListList, FloatList, Result
+from agent_pb2 import TextResponse, FloatListList, FloatList, Result, TokenNum, Tokens
 from agent_pb2_grpc import llmServicer, add_llmServicer_to_server, embedingServicer, add_embedingServicer_to_server, compressed_promptServicer, add_compressed_promptServicer_to_server
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, TextStreamer, AutoConfig, TextIteratorStreamer
@@ -68,6 +68,18 @@ class llmServicer(llmServicer):
         except:
             for i in range(10):
                 torch.cuda.empty_cache()
+
+    def get_num_tokens_from_messages(self, request, context):
+        try:
+            return TokenNum(num=len(tokenizer.tokenize(request.prompt)))
+        except:
+            print('error')
+
+    def get_tokens_from_messages(self, request, context):
+        try:
+            return Tokens(token=tokenizer.tokenize(request.prompt))
+        except:
+            print('error')
         
     def create(self, uid):
         if uid not in session:

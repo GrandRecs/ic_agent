@@ -4,7 +4,7 @@ import pymongo, grpc, time, asyncio, warnings
 
 from typing import Any, AsyncIterator, Dict, List, cast, Mapping, Optional, Iterator, Type
 
-from agent_pb2 import TextRequest, Query, Docs, Compress
+from agent_pb2 import TextRequest, Query, Docs, Compress, MessageRequest
 from agent_pb2_grpc import llmStub, embedingStub, compressed_promptStub
 
 from langchain.prompts import PromptTemplate
@@ -73,6 +73,20 @@ class LLM(LLM):
             if run_manager:
                 run_manager.on_llm_new_token(chunk.text, chunk=chunk)
 
+    def get_num_tokens_from_messages(self, message: str):
+        if self.uid == None or self.uid == "":
+            raise Exception("uid is required")
+        if self.stub == None:
+            self.stub = llmStub(grpc.insecure_channel(self.host))
+        return self.stub.get_num_tokens_from_messages(MessageRequest(prompt = message)).num
+
+
+    def get_tokens_from_messages(self, message: str):
+        if self.uid == None or self.uid == "":
+            raise Exception("uid is required")
+        if self.stub == None:
+            self.stub = llmStub(grpc.insecure_channel(self.host))
+        return self.stub.get_tokens_from_messages(MessageRequest(prompt = message)).token
     
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
